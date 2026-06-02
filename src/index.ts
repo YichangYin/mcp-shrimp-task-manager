@@ -47,6 +47,20 @@ import {
   initProjectRulesSchema,
   researchMode,
   researchModeSchema,
+  completeTask,
+  completeTaskSchema,
+  generateReport,
+  generateReportSchema,
+  saveMemory,
+  saveMemorySchema,
+  codeSearch,
+  codeSearchSchema,
+  readFile,
+  readFileSchema,
+  analyzeProject,
+  analyzeProjectSchema,
+  saveSnippet,
+  saveSnippetSchema,
 } from "./tools/index.js";
 
 async function main() {
@@ -192,6 +206,55 @@ async function main() {
               "toolsDescription/researchMode.md"
             ),
             inputSchema: zodToJsonSchema(researchModeSchema),
+          },
+          {
+            name: "complete_task",
+            description: await loadPromptFromTemplate(
+              "toolsDescription/completeTask.md"
+            ),
+            inputSchema: zodToJsonSchema(completeTaskSchema),
+          },
+          {
+            name: "generate_report",
+            description: await loadPromptFromTemplate(
+              "toolsDescription/generateReport.md"
+            ),
+            inputSchema: zodToJsonSchema(generateReportSchema),
+          },
+          {
+            name: "save_memory",
+            description: await loadPromptFromTemplate(
+              "toolsDescription/saveMemory.md"
+            ),
+            inputSchema: zodToJsonSchema(saveMemorySchema),
+          },
+          {
+            name: "code_search",
+            description: await loadPromptFromTemplate(
+              "toolsDescription/codeSearch.md"
+            ),
+            inputSchema: zodToJsonSchema(codeSearchSchema),
+          },
+          {
+            name: "read_file",
+            description: await loadPromptFromTemplate(
+              "toolsDescription/readFile.md"
+            ),
+            inputSchema: zodToJsonSchema(readFileSchema),
+          },
+          {
+            name: "analyze_project",
+            description: await loadPromptFromTemplate(
+              "toolsDescription/analyzeProject.md"
+            ),
+            inputSchema: zodToJsonSchema(analyzeProjectSchema),
+          },
+          {
+            name: "save_snippet",
+            description: await loadPromptFromTemplate(
+              "toolsDescription/saveSnippet.md"
+            ),
+            inputSchema: zodToJsonSchema(saveSnippetSchema),
           },
         ],
       };
@@ -349,6 +412,76 @@ async function main() {
                 );
               }
               return await researchMode(parsedArgs.data);
+            case "complete_task":
+              parsedArgs = await completeTaskSchema.safeParseAsync(
+                request.params.arguments
+              );
+              if (!parsedArgs.success) {
+                throw new Error(
+                  `Invalid arguments for tool ${request.params.name}: ${parsedArgs.error.message}`
+                );
+              }
+              return await completeTask(parsedArgs.data);
+            case "generate_report":
+              parsedArgs = await generateReportSchema.safeParseAsync(
+                request.params.arguments
+              );
+              if (!parsedArgs.success) {
+                throw new Error(
+                  `Invalid arguments for tool ${request.params.name}: ${parsedArgs.error.message}`
+                );
+              }
+              return await generateReport(parsedArgs.data);
+            case "save_memory":
+              parsedArgs = await saveMemorySchema.safeParseAsync(
+                request.params.arguments
+              );
+              if (!parsedArgs.success) {
+                throw new Error(
+                  `Invalid arguments for tool ${request.params.name}: ${parsedArgs.error.message}`
+                );
+              }
+              return await saveMemory(parsedArgs.data);
+            case "code_search":
+              parsedArgs = await codeSearchSchema.safeParseAsync(
+                request.params.arguments
+              );
+              if (!parsedArgs.success) {
+                throw new Error(
+                  `Invalid arguments for tool ${request.params.name}: ${parsedArgs.error.message}`
+                );
+              }
+              return await codeSearch(parsedArgs.data);
+            case "read_file":
+              parsedArgs = await readFileSchema.safeParseAsync(
+                request.params.arguments
+              );
+              if (!parsedArgs.success) {
+                throw new Error(
+                  `Invalid arguments for tool ${request.params.name}: ${parsedArgs.error.message}`
+                );
+              }
+              return await readFile(parsedArgs.data);
+            case "analyze_project":
+              parsedArgs = await analyzeProjectSchema.safeParseAsync(
+                request.params.arguments
+              );
+              if (!parsedArgs.success) {
+                throw new Error(
+                  `Invalid arguments for tool ${request.params.name}: ${parsedArgs.error.message}`
+                );
+              }
+              return await analyzeProject(parsedArgs.data);
+            case "save_snippet":
+              parsedArgs = await saveSnippetSchema.safeParseAsync(
+                request.params.arguments
+              );
+              if (!parsedArgs.success) {
+                throw new Error(
+                  `Invalid arguments for tool ${request.params.name}: ${parsedArgs.error.message}`
+                );
+              }
+              return await saveSnippet(parsedArgs.data);
             default:
               throw new Error(`Tool ${request.params.name} does not exist`);
           }
@@ -372,6 +505,7 @@ async function main() {
     const transport = new StdioServerTransport();
     await server.connect(transport);
   } catch (error) {
+    process.stderr.write(`MCP Server Error: ${error instanceof Error ? error.message : String(error)}\n`);
     process.exit(1);
   }
 }

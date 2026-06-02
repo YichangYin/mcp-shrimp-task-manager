@@ -1,0 +1,1 @@
+Scan project directory structure, generate structured codebase overview and statistics

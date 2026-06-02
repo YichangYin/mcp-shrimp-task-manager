@@ -1,0 +1,1 @@
+Generate progress reports from task list with summary, detailed and retrospective modes

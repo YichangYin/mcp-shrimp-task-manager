@@ -37,4 +37,10 @@ export { queryTask, queryTaskSchema } from "./queryTask.js";
 // getTaskDetail
 export { getTaskDetail, getTaskDetailSchema } from "./getTaskDetail.js";
 
+// 完成任務
+export { completeTask, completeTaskSchema } from "./completeTask.js";
+
+// 生成報告
+export { generateReport, generateReportSchema } from "./generateReport.js";
+
 export { splitTasksRaw, splitTasksRawSchema } from "./splitTasksRaw.js";

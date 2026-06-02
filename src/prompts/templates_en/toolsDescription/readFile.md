@@ -1,0 +1,1 @@
+Safely read file content with line range support and automatic truncation protection

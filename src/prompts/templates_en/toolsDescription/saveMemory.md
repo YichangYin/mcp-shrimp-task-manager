@@ -1,0 +1,1 @@
+Manage memory: save, retrieve, list and delete cross-session project knowledge

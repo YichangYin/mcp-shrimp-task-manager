@@ -13,6 +13,11 @@ const PROJECT_ROOT = path.resolve(__dirname, "../..");
 // Global server instance
 let globalServer: Server | null = null;
 
+// 緩存 roots 查詢結果，避免每次 getDataDir() 都發 roots/list
+// Cache roots query result to avoid sending roots/list on every getDataDir()
+let cachedRoots: Awaited<ReturnType<Server["listRoots"]>> | undefined = undefined;
+let rootsPromise: Promise<Awaited<ReturnType<Server["listRoots"]>>> | null = null;
+
 /**
  * 設置全局 server 實例
  * Set global server instance
@@ -41,30 +46,34 @@ export async function getDataDir(): Promise<string> {
   const server = getGlobalServer();
   let rootPath: string | null = null;
 
-  if (server) {
-    try {
-      const roots = await server.listRoots();
+  if (server && cachedRoots === undefined) {
+    // 只查詢一次 roots，緩存結果避免重複發送 roots/list
+    // Only query roots once, cache result to avoid repeated roots/list requests
+    if (!rootsPromise) {
+      rootsPromise = Promise.race([
+        server.listRoots(),
+        new Promise<Awaited<ReturnType<Server["listRoots"]>>>((_, reject) =>
+          setTimeout(() => reject(new Error("listRoots timeout")), 1000)
+        ),
+      ]).catch(() => ({ roots: [] }));
+    }
+    cachedRoots = await rootsPromise;
+  }
 
-      // 找出第一筆 file:// 開頭的 root
-      // Find the first root starting with file://
-      if (roots.roots && roots.roots.length > 0) {
-        const firstFileRoot = roots.roots.find((root) =>
-          root.uri.startsWith("file://")
-        );
-        if (firstFileRoot) {
-          // 從 file:// URI 中提取實際路徑
-          // Extract actual path from file:// URI
-          // Windows: file:///C:/path -> C:/path
-          // Unix: file:///path -> /path
-          if (process.platform === 'win32') {
-            rootPath = firstFileRoot.uri.replace("file:///", "").replace(/\//g, "\\");
-          } else {
-            rootPath = firstFileRoot.uri.replace("file://", "");
-          }
-        }
+  if (cachedRoots?.roots && cachedRoots.roots.length > 0) {
+    const firstFileRoot = cachedRoots.roots.find((root) =>
+      root.uri.startsWith("file://")
+    );
+    if (firstFileRoot) {
+      // 從 file:// URI 中提取實際路徑
+      // Extract actual path from file:// URI
+      // Windows: file:///C:/path -> C:/path
+      // Unix: file:///path -> /path
+      if (process.platform === 'win32') {
+        rootPath = firstFileRoot.uri.replace("file:///", "").replace(/\//g, "\\");
+      } else {
+        rootPath = firstFileRoot.uri.replace("file://", "");
       }
-    } catch (error) {
-      // Silently handle error - console not supported in MCP
     }
   }
 
