@@ -144,6 +144,14 @@ Shrimp Task Manager is an MCP (Model Context Protocol) server that transforms ho
 - **📏 Project Rules**: Define and maintain coding standards across your project
 - **💾 Task Memory**: Automatic backup and restoration of task history
 
+### 🔧 Code Management Tools *(NEW in v1.1)*
+- **🔍 Code Search**: Search codebase with regex and file type filtering
+- ** File Reader**: Safe structured file reading with line range support  
+- **📊 Project Analyzer**: Auto-generate project structure overview
+- ** Memory System**: Persist knowledge across sessions with categories and tags
+- **📋 Snippet Manager**: Save and reuse code snippets with language detection
+- **📈 Report Generator**: Generate progress reports (summary/detailed/retrospective)
+
 ### Web Interfaces
 
 #### 🖥️ Task Viewer
